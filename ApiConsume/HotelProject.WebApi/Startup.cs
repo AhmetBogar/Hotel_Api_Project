@@ -1,3 +1,8 @@
+using HotelProject.BusinessLayer.Abstract;
+using HotelProject.BusinessLayer.Concrete;
+using HotelProject.DataAccessLayer.Abstract;
+using HotelProject.DataAccessLayer.Concrete;
+using HotelProject.DataAccessLayer.EntityFramework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +30,31 @@ namespace HotelProject.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Servisler
+            services.AddDbContext<Context>();
+            services.AddScoped<IStaffDal, EfStaffDal>();
+            services.AddScoped<IStaffService, StaffManager>();
+
+            services.AddScoped<IServicesDal, EfServiceDal>();
+            services.AddScoped<IServiceService, ServiceManager>();
+
+            services.AddScoped<IRoomDal, EfRoomDal>();
+            services.AddScoped<IRoomService, RoomManager>();
+
+            services.AddScoped<ISubscribeDal, EfSubscribeDal>();
+            services.AddScoped<ISubscribeService, SubscribeManager>();
+
+            services.AddScoped<ITestimonialDal, EfTestimonialDal>();
+            services.AddScoped<ITestimonialService, TestimonialManager>();
+
+            //Api Cors Ýþlemleri 
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("OtelApiCors", opts =>
+                {
+                    opts.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -44,6 +74,9 @@ namespace HotelProject.WebApi
             }
 
             app.UseRouting();
+
+            //Yukarýda tanýmladýðýmýz cors;
+            app.UseCors("OtelApiCors");
 
             app.UseAuthorization();
 
